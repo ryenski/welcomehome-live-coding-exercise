@@ -1,56 +1,58 @@
-# Video Store — Coding Exercise
+# Pet Hotel — Coding Exercise
 
-You've inherited a small Ruby codebase that manages a video rental store. It models `Movie`, `Rental`, and `Customer`, and its main user-facing feature is `Customer#statement`, which prints a plain-text rental record:
-
-```
-Rental Record for Martin
- Plan 9 3.5
- Dune 6
- Ratatouille 3.0
-Amount owed is 12.5
-You earned 4 frequent renter points
-```
-
-A test suite pins down the current behavior of `statement` across the different pricing rules. You can run it with:
+You've inherited a small Ruby codebase for a pet hotel. It models `Pet`, `Stay`, and `Owner`, and its main user-facing feature is `Owner#invoice`, which prints a plain-text invoice for an owner's pets:
 
 ```
-ruby test/test_statement.rb
+Pet Hotel invoice for Sam
+ Biscuit 32.5
+ Noodle 75
+ Bubbles 10.0
+Amount owed is 117.5
+You earned 4 treat points
+```
+
+A test suite pins down the current behavior of `invoice` across the different pricing rules. You can run it with:
+
+```
+ruby test/test_invoice.rb
 ```
 
 The only dependency is `minitest`, which ships with Ruby.
 
 ## The new requirement
 
-Marketing wants to start emailing customers their rental records. They've asked for an **HTML version** of the statement that contains the same information as the plain-text version but is formatted for display in a web page.
+The hotel wants to start emailing owners their invoices. They've asked for an **HTML version** of the invoice that contains the same information as the plain-text version but is formatted for display in an email.
 
-For the statement above, the HTML output might look something like:
+For the invoice above, the HTML output might look something like:
 
 ```html
-<h1>Rental Record for <em>Martin</em></h1>
-<p>
-  Plan 9: 3.5<br />
-  Dune: 6<br />
-  Ratatouille: 3.0<br />
-</p>
-<p>Amount owed is <em>12.5</em></p>
-<p>On this rental you earned <em>4</em> frequent renter points</p>
+<div>
+  <h1>Pet Hotel invoice for <em>Sam</em></h1>
+  <ul>
+    <li>Biscuit: 32.5</li>
+    <li>Noodle: 75</li>
+    <li>Bubbles: 10.0</li>
+  </ul>
+  <p>Amount owed is <em>117.5</em></p>
+  <p>On these stays you earned <em>4</em> treat points</p>
+</div>
 ```
 
-The exact markup is up to you — just keep all the information from the plain-text version visible.
+The exact markup is up to you. Just keep all the information from the plain-text version visible.
 
 ## Your task
 
-1. Add an `html_statement` method that produces the HTML version of a customer's rental record.
+1. Add an `html_invoice` method that produces the HTML version of an owner's invoice.
 2. Add tests covering its behavior.
-3. The existing `statement` tests must continue to pass — the plain-text output should not change.
+3. The existing `invoice` tests must continue to pass. The plain-text output should not change.
 
 ## Guidelines
 
-- Aim for code you'd be comfortable maintaining. The interviewer is interested in _how_ you arrive at your solution as much as the final result — please think out loud as you work.
-- You're free to restructure `Customer`, `Rental`, and `Movie` however you see fit. Renaming, extracting, moving, or splitting things is fair game.
+- Aim for code you'd be comfortable maintaining. The interviewer is interested in _how_ you arrive at your solution as much as the final result, so please think out loud as you work.
+- You're free to restructure `Owner`, `Stay`, and `Pet` however you see fit. Renaming, extracting, moving, or splitting things is fair game.
 - If something in the existing code makes the new requirement awkward, feel free to address it as part of the task.
-- No need to add gems or change the test setup. Stick with `minitest` and a single `ruby test/test_statement.rb` command.
+- No need to add gems or change the test setup. Stick with `minitest` and a single `ruby test/test_invoice.rb` command.
 
 ### Anticipated change
 
-Marketing has also mentioned they expect to keep tweaking pricing rules and adding new categories over the next few quarters. Keep that in mind as you decide where the new logic lives — a future engineer should be able to add the next category without hunting through the codebase.
+The hotel expects to keep adjusting its rates and to start accepting new kinds of pets over the next few quarters. Keep that in mind as you decide where the new logic lives. A future engineer should be able to add the next kind of pet without hunting through the codebase.
