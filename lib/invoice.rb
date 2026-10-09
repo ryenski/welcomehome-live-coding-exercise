@@ -10,31 +10,34 @@ class Invoice
     total_amount = 0
     treat_points = 0
 
-    result = formatter.header(name)
+    body = formatter.wrapper('div') do
+      result = formatter.header(name)
 
-    result += formatter.wrapper('ul') do
-      @stays.collect do |stay|
-        this_amount = stay.amount
+      result += formatter.wrapper('ul') do
+        @stays.collect do |stay|
+          this_amount = stay.amount
 
-        # add treat points
-        treat_points += 1
-        # add bonus for an exotic stay of three nights or more
-        # TODO: consider moving  to invoice as a calculatoin
-        treat_points += 1 if stay.pet.price_code == Pet::EXOTIC && stay.nights > 2
-        # show figures for this stay
-        # TODO: Consider create factory object for text/html output
+          # add treat points
+          treat_points += 1
+          # add bonus for an exotic stay of three nights or more
+          # TODO: consider moving  to invoice as a calculatoin
+          treat_points += 1 if stay.pet.price_code == Pet::EXOTIC && stay.nights > 2
+          # show figures for this stay
+          # TODO: Consider create factory object for text/html output
 
-        total_amount += this_amount
+          total_amount += this_amount
 
-        formatter.stay_line(stay.pet.name, this_amount)
-      end.join
+          formatter.stay_line(stay.pet.name, this_amount)
+        end.join
+      end
+
+      # add footer lines
+      result += formatter.amount_owed(total_amount)
+      result += formatter.treat_points(treat_points)
+      # TODO: Add wrapper method
+      result
     end
-
-    # add footer lines
-    result += formatter.amount_owed(total_amount)
-    result += formatter.treat_points(treat_points)
-    # TODO: Add wrapper method
-    result
+    body
   end
 
   def formater_for(format)
@@ -48,19 +51,27 @@ class Invoice
 
   class HtmlFormatter
     def header(name)
-      "<div><h1>Pet Hotel invoice for #{name}</h1>"
+      wrapper('h1') do
+        "Pet Hotel invoice for #{name}"
+      end
     end
 
     def stay_line(pet_name, amount)
-      "<li>#{pet_name}: #{amount}</li>"
+      wrapper('li') do
+        "#{pet_name}: #{amount}"
+      end
     end
 
     def amount_owed(total_amount)
-      "<p>Amount owed is #{total_amount}</p>"
+      wrapper('p') do
+        "Amount owed is #{total_amount}"
+      end
     end
 
     def treat_points(treat_points)
-      "<p>You earned #{treat_points} treat points</p></div>"
+      wrapper('p') do
+        "You earned #{treat_points} treat points"
+      end
     end
 
     def wrapper(tag, &block)
