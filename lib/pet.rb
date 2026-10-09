@@ -7,6 +7,7 @@ class Pet
   attr_accessor :price_code
 
   def initialize(name, price_code)
-    @name, @price_code = name, price_code
+    @name = name
+    @price_code = price_code
   end
 end

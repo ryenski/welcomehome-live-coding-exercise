@@ -10,9 +10,13 @@ class Owner
     @stays << arg
   end
 
-  # Move to Invoice class
   def invoice
     inv = Invoice.new(name, stays)
     inv.result
+  end
+
+  def html_invoice
+    inv = Invoice.new(name, stays)
+    inv.result('html')
   end
 end

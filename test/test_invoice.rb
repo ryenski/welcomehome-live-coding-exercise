@@ -12,7 +12,7 @@ class String
   # multi-line strings like HTML can be compared without worrying about
   # indentation, e.g. `assert_equal expected.squish, actual.squish`.
   def squish
-    gsub(/[[:space:]]+/, ' ').strip
+    gsub(/[[:space:]]+/, ' ').gsub(/>\s+</, '><').strip
   end
 end
 
@@ -21,6 +21,12 @@ class InvoiceTest < Minitest::Test
     owner = Owner.new('Sam')
     stays.each { |s| owner.add_stay(s) }
     owner.invoice
+  end
+
+  def html_invoice_for(stays)
+    owner = Owner.new('Sam')
+    stays.each { |s| owner.add_stay(s) }
+    owner.html_invoice
   end
 
   def test_owner_with_no_stays
@@ -32,6 +38,17 @@ class InvoiceTest < Minitest::Test
     assert_equal expected, invoice_for([])
   end
 
+  def test_html_owner_with_no_stays
+    expected = <<~TEXT.squish
+      <div>
+        <h1>Pet Hotel invoice for Sam</h1>
+        <p>Amount owed is 0</p>
+        <p>You earned 0 treat points</p>
+      </div>
+    TEXT
+    assert_equal expected, html_invoice_for([]).squish
+  end
+
   def test_dog_for_one_night
     stay = Stay.new(Pet.new('Biscuit', Pet::DOG), 1)
     expected = <<~TEXT.chomp
@@ -41,6 +58,21 @@ class InvoiceTest < Minitest::Test
       You earned 1 treat points
     TEXT
     assert_equal expected, invoice_for([stay])
+  end
+
+  def test_html_dog_for_one_night
+    stay = Stay.new(Pet.new('Biscuit', Pet::DOG), 1)
+    expected = <<~TEXT.squish
+      <div>
+        <h1>Pet Hotel invoice for Sam</h1>
+        <ul>
+          <li>Biscuit: 20</li>
+        </ul>
+        <p>Amount owed is 20</p>
+        <p>You earned 1 treat points</p>
+      </div>
+    TEXT
+    assert_equal expected, html_invoice_for([stay]).squish
   end
 
   def test_dog_for_two_nights_stays_at_flat_rate
@@ -62,7 +94,8 @@ class InvoiceTest < Minitest::Test
       Amount owed is 45.0
       You earned 1 treat points
     TEXT
-    assert_equal expected, invoice_for([stay])
+    actual = invoice_for([stay])
+    assert_equal expected, actual
   end
 
   def test_exotic_for_two_nights_earns_no_bonus_point
